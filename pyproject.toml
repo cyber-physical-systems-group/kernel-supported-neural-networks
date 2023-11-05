@@ -1,0 +1,36 @@
+[tool.black]
+line-length = 120
+target-version = ['py39', 'py310', 'py311']
+include = '\.pyi?$'
+
+
+[tool.isort]
+profile = 'black'
+line_length = 120
+py_version = 310
+
+[tool.mypy]
+exclude = [
+    'venv',
+    '\.venv',
+    '\.git',
+    '__pycache__',
+    'build',
+    'dist',
+    'tests',
+]
+
+[[tool.mypy.overrides]]
+module = [
+  "numpy.*",
+  "sklearn.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+# source: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+filterwarnings = [
+    "error",
+    "ignore::UserWarning",
+    'ignore:function ham\(\) is deprecated:DeprecationWarning',
+]
