@@ -17,7 +17,7 @@ def gaussian_kernel(memory: NDArray, points: NDArray, bandwidth: float) -> NDArr
     return np.exp(-0.5 * (diff / bandwidth) ** 2)
 
 
-def nearest_neighbor_kernel(memory: NDArray, points: NDArray, bandwidth: float) -> NDArray:
+def box_kernel(memory: NDArray, points: NDArray, bandwidth: float) -> NDArray:
     diff = memory - points
     return (np.abs(diff) <= bandwidth).astype(float)
 
@@ -64,11 +64,11 @@ class NadarayaWatsonEstimator(RegressorMixin, BaseEstimator):
 
         :return: ND array of bound with the same dimensions as function
         """
-        lower = (kappa <= 1) * np.sqrt(1 / 2) * np.sqrt(np.log(2 / delta))
-        upper = (kappa > 1) * kappa * np.log(np.sqrt(1 + kappa) / delta)
-
+        lower = (kappa <= 1) * np.sqrt(np.log(np.sqrt(2) / delta))
+        upper = (kappa > 1) * np.sqrt(kappa * np.log(np.sqrt(1 + kappa) / delta))
         alpha = lower + upper
-        return lipschitz_constant * self.bandwidth * noise_variance * alpha / kappa
+
+        return lipschitz_constant * self.bandwidth + 2 * noise_variance * alpha / kappa
 
     def predict(
         self,
@@ -96,7 +96,8 @@ class NadarayaWatsonEstimator(RegressorMixin, BaseEstimator):
                 message = "delta, lipschitz_constant and noise_variance must be provided when with_bounds is True!"
                 raise ValueError(message)
 
-            bounds = self.compute_bounds(np.sum(weights, axis=0), delta, lipschitz_constant, noise_variance)
+            kappa = weights.sum(axis=0)
+            bounds = self.compute_bounds(kappa, delta, lipschitz_constant, noise_variance)
             return predictions, bounds
 
         return predictions
@@ -104,12 +105,3 @@ class NadarayaWatsonEstimator(RegressorMixin, BaseEstimator):
     def fit_predict(self, x: NDArray, y: NDArray, **kwargs) -> NDArray:
         self.fit(x, y)
         return self.predict(x, **kwargs)
-
-    def partial_fit(self, x: NDArray, y: NDArray) -> None:
-        """Partial fit, used for online learning. Calling this does not change the stored data, only appends to it."""
-        if self.x is None or self.y is None:
-            self.fit(x, y)  # first run of fit
-        else:
-            # keep only the last `max_memory` samples
-            self.x = np.concatenate([self.x, x])[self.max_memory :]  # noqa: E203
-            self.y = np.concatenate([self.y, y])[self.max_memory :]  # noqa: E203
