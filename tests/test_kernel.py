@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from src.models.kernel import NadarayaWatsonEstimator, box_kernel
+from src.models.kernel import NadarayaWatsonEstimator
 
 L = 2  # Lipschitz constant
 NOISE_VARIANCE = 0.05
@@ -21,7 +21,7 @@ def test_data():
 
 
 def test_kernel_model(train_data, test_data):
-    estimator = NadarayaWatsonEstimator(kernel=box_kernel, bandwidth=KERNEL_BANDWIDTH)
+    estimator = NadarayaWatsonEstimator(bandwidth=KERNEL_BANDWIDTH)
 
     # train non-parametric estimator
     train_x = np.expand_dims(train_data["train_x"].values, axis=-1)
