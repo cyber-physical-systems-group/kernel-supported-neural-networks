@@ -3,7 +3,7 @@ from numpy.typing import NDArray
 from sklearn.base import BaseEstimator, RegressorMixin
 
 
-class NadarayaWatsonEstimator(RegressorMixin, BaseEstimator):
+class NumpyNadarayaWatsonEstimator(RegressorMixin, BaseEstimator):
     """
     Nadaraya-Watson estimator for regression, it is a non-parametric estimator that uses kernel functions.
     Fitting is done by storing all the training data, so it is not recommended for large datasets.
@@ -11,6 +11,8 @@ class NadarayaWatsonEstimator(RegressorMixin, BaseEstimator):
 
     This implementation supports returning confidence bounds for the predictions, which requires the knowing Lipschitz
     constant and noise variance of the function being estimated.
+
+    :note: two versions of Nadaraya-Watson estimator are implemented, one using numpy and one using pytorch.
     """
 
     def __init__(self, bandwidth: float, max_memory: int | None = None):
