@@ -1,4 +1,6 @@
-import torch.nn
+import torch
+import lightning.pytorch as pl
+from torch import Tensor
 
 from .kernel import TorchNadarayaWatsonEstimator
 from .network.activations import bounded_linear
@@ -60,3 +62,34 @@ class HybridResidualModule(torch.nn.Module):
         residuals = self.network(inputs)
         residuals = bounded_linear(residuals, bounds)
         return predictions + residuals
+
+
+class TrainableHybridModel(pl.LightningModule):
+    """
+    Simple wrapper using lightning allowing easy training of the hybrid model.
+    Predictions can be done by simply calling forward (ideally in no_grad context).
+    """
+    def __init__(self, model: HybridResidualModule):
+        super().__init__()
+
+        self.model = model
+
+    def forward(self, x: Tensor) -> Tensor:
+        return self.model(x)
+
+    def training_step(self, batch: tuple[Tensor, Tensor], batch_idx: int):
+        x, y = batch
+        y_hat = self.model(x)
+        loss = torch.nn.functional.mse_loss(y_hat, y)  # type: ignore
+
+        return loss
+
+    def validation_step(self, batch: tuple[Tensor, Tensor], batch_idx: int) -> Tensor:
+        x, y = batch
+        y_hat = self.model(x)
+        loss = torch.nn.functional.mse_loss(y_hat, y)  # type: ignore
+
+        return loss
+
+    def configure_optimizers(self):
+        return torch.optim.Adam(self.parameters())
