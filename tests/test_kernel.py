@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 import torch
 
-from src.models.kernel import NumpyNadarayaWatsonEstimator, TorchNadarayaWatsonEstimator
+from src.models.kernel import NumpyKernelRegression, TorchKernelRegression
 
 L = 2  # Lipschitz constant
 NOISE_VARIANCE = 0.05
@@ -24,13 +24,13 @@ def test_data():
 @pytest.mark.parametrize(
     "estimator_cls, forward_cast_fn, backward_cast_fn",
     [
-        (NumpyNadarayaWatsonEstimator, lambda x: np.expand_dims(x, axis=-1), lambda x: x),
-        (TorchNadarayaWatsonEstimator, lambda x: torch.unsqueeze(torch.from_numpy(x), dim=-1), lambda x: x.numpy()),
+        (NumpyKernelRegression, lambda x: np.expand_dims(x, axis=-1), lambda x: x),
+        (TorchKernelRegression, lambda x: torch.unsqueeze(torch.from_numpy(x), dim=-1), lambda x: x.numpy()),
     ],
 )
 def test_kernel_model(train_data, test_data, estimator_cls, forward_cast_fn: callable, backward_cast_fn: callable):
     """
-    Test covers numpy and torch implementations of Nadaraya-Watson estimator.
+    Test covers numpy and torch implementations of kernel regression.
 
     :param estimator_cls: class of estimator to test
     :param forward_cast_fn: function to cast data to type expected by estimator from pandas DataFrame to Tensor or array

@@ -1,8 +1,8 @@
-import torch
 import lightning.pytorch as pl
+import torch
 from torch import Tensor
 
-from .kernel import TorchNadarayaWatsonEstimator
+from .kernel import TorchKernelRegression
 from .network.activations import bounded_linear
 
 
@@ -34,7 +34,7 @@ class HybridResidualModule(torch.nn.Module):
         self.dtype = dtype
 
         self.network = network.to(dtype)
-        self.estimator = TorchNadarayaWatsonEstimator(bandwidth=bandwidth)
+        self.estimator = TorchKernelRegression(bandwidth=bandwidth)
 
         if residual_zero_init:
             for parameter in self.network[-1].parameters():
@@ -69,6 +69,7 @@ class TrainableHybridModel(pl.LightningModule):
     Simple wrapper using lightning allowing easy training of the hybrid model.
     Predictions can be done by simply calling forward (ideally in no_grad context).
     """
+
     def __init__(self, model: HybridResidualModule):
         super().__init__()
 

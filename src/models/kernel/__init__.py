@@ -1,7 +1,7 @@
-from .numpy import NumpyNadarayaWatsonEstimator
-from .torch import TorchNadarayaWatsonEstimator
+from .numpy import NumpyKernelRegression
+from .torch import TorchKernelRegression
 
 __all__ = [
-    "NumpyNadarayaWatsonEstimator",
-    "TorchNadarayaWatsonEstimator",
+    "NumpyKernelRegression",
+    "TorchKernelRegression",
 ]
