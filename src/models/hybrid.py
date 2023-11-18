@@ -1,3 +1,6 @@
+import math
+from typing import Literal
+
 import lightning.pytorch as pl
 import torch
 from torch import Tensor
@@ -14,7 +17,7 @@ class HybridResidualModule(torch.nn.Module):
         delta: float,
         lipschitz_constant: float,
         noise_variance: float,
-        residual_zero_init: bool = False,
+        readout_init: Literal["zeros", "bounded", "default"],
         dtype: torch.dtype = torch.float32,
     ):
         """
@@ -24,21 +27,31 @@ class HybridResidualModule(torch.nn.Module):
                       computing the bounds of the non-parametric estimator
         :param lipschitz_constant: Lipschitz constant of the function being estimated, required for computing the bounds
         :param noise_variance: variance of the noise in the data, required for computing the bounds
-        :param residual_zero_init: if True, the last layer of the network is initialized to zero
+        :param readout_init: initialization scheme for the last layer of the network, can be:
+                             `zeros` - setting all parameters to zeros
+                             `default` - uniform initialization for last layer
+                             `bounded` - setting parameters to random values from uniform distribution multiplied by
+                                         the mean value of the bounds computed during adapt
         """
         super(HybridResidualModule, self).__init__()
 
         self.delta = delta
         self.lipschitz_constant = lipschitz_constant
         self.noise_variance = noise_variance
+        self.readout_init = readout_init
         self.dtype = dtype
 
         self.network = network.to(dtype)
         self.estimator = TorchKernelRegression(bandwidth=bandwidth)
 
-        if residual_zero_init:
-            for parameter in self.network[-1].parameters():
-                torch.nn.init.zeros_(parameter)
+    def set_readout_parameters(self, scale: float) -> None:
+        """Sets initial values for the readout (last layer) of the network."""
+        stdv = 1.0 / math.sqrt(self.network[-1].weight.size(dim=1))
+        torch.nn.init.uniform_(self.network[-1].weight, -scale * stdv, scale * stdv)
+
+        if (bias := self.network[-1].bias) is not None:
+            stdv = 1.0 / math.sqrt(bias.size(dim=0))
+            torch.nn.init.uniform_(bias, -scale * stdv, scale * stdv)
 
     def adapt(self, non_parametric_x: torch.Tensor, non_parametric_y: torch.Tensor) -> None:
         """
@@ -47,8 +60,27 @@ class HybridResidualModule(torch.nn.Module):
         """
         non_parametric_x = non_parametric_x.to(self.dtype)
         non_parametric_y = non_parametric_y.to(self.dtype)
+
         # estimator itself has no parameters, so only dtype of training data needs to be changed
         self.estimator.fit(non_parametric_x, non_parametric_y)
+        # compute bounds on training set to use for initialization gain
+        _, bounds = self.estimator.predict(
+            non_parametric_x,
+            with_bounds=True,
+            delta=self.delta,
+            lipschitz_constant=self.lipschitz_constant,
+            noise_variance=self.noise_variance,
+        )
+
+        # initialize readout layer - optionally using bounds
+        if self.readout_init == "zeros":
+            torch.nn.init.zeros_(self.network[-1].weight)
+            torch.nn.init.zeros_(self.network[-1].bias)
+        if self.readout_init == "bounded":
+            scale = torch.std(bounds).numpy().item()
+            self.set_readout_parameters(scale=scale)
+        if self.readout_init == "default":
+            self.set_readout_parameters(scale=1.0)
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         predictions, bounds = self.estimator.predict(
