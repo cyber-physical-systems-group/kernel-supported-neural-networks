@@ -1,0 +1,5 @@
+name: Silverbox
+path: data/silverbox.csv
+test_size: 40475
+input_columns: [u]
+output_columns: [y]

@@ -1,0 +1,48 @@
+general:
+  project: bounded-training
+  n_runs: 1
+  name: placeholder
+training:
+  n_epochs: 10000
+  patience: 100
+  lr_patience: 20
+  timeout: "00:00:01:00"
+  batch_size: 32
+  shift: 1
+  validation_size: 0.1
+  # settings for bounds
+  bound_crossing_penalty: 0.0
+  bound_during_training: false
+model:
+  model_name: MLP
+  # generic parameter convention
+  n_input_time_steps: 64
+  n_output_time_steps: 1
+  n_input_state_variables: 1
+  n_output_state_variables: 1
+  # neural network parameters
+  n_layers: 2
+  # kernel regression parameters
+  bandwidth: 1
+  kernel: box_kernel
+  lipschitz_constant: 1.0
+  delta: 0.1
+  k: 10
+  decay: 0.0
+  noise_var_kernel_size: 11
+  memory_epsilon: 0.1
+sweep:
+  name: initial-large-sweep
+  method: random
+  metric: {name: test/root_mean_squared_error, goal: minimize}
+sweep_parameters:
+  # neural network
+  n_hidden_layers: [1, 2, 3, 4, 5]
+  n_hidden_time_steps: [32, 16, 8]
+  n_hidden_state_variables: [1, 4, 8, 16]
+  activation: [leaky_relu, relu, gelu, sigmoid, tanh]
+  # kernel regression
+  bound_crossing_penalty: [0.0, 0.1, 0.2, 0.3, 0.5, 0.9, 1.0]
+  bandwidth: [0.1, 0.5, 0.9, 1.0, 1.5, 2.0]
+  kernel: [box_kernel, epanechnikov_kernel, triangular_kernel, quartic_kernel, triweight_kernel, tricube_kernel, cosine_kernel]
+  decay: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.9, 1.0]
