@@ -5,8 +5,8 @@ in `csv` directory.
 
 | Dataset | Train Samples | Test Samples | Dynamics | Sigma | L   |
 |---------|---------------|--------------|----------|-------|-----|
-| TOY     | 1000          | 1000         | None     | 0.1   | 1.0 | 
-
+| TOY     | 1000          | 1000         | None     | 0.05  | 1.0 |
+| STATIC  | 10 000        | 10 000       | None     | 0.1   | 1/4 |
 
 ### TOY
 
@@ -16,3 +16,18 @@ are samples from uniform distribution on interval `[0, 12pi]` and samples of `y`
 Gaussian distribution with standard deviation `0.05`. 
 
 Dataset is stored in `csv/toy.csv` file with feature column `x` and target column `y`.
+
+### STATIC
+
+This dataset represents high dimensional static system, R^8 to R^1. The function is defined as sum of 8 Gaussian density
+functions (not distribution, but explicit PDF) with different C (given in table below). The inputs are samples uniformly
+on range [-1, 1]. L is 1/4 for all Gaussian functions, so for its sum as well. Noise was added with sigma = 0.1.
+
+| C1 | 1.42  |
+| C2 | -1.32 |
+| C3 | -1.65 |
+| C4 | -1.04 |
+| C5 | 0.61  |
+| C6 | 1.98  |
+| C7 | 0.31  |
+| C8 | -0.31 |
