@@ -3,10 +3,11 @@
 This directory contains datasets used in the paper and presentations related to it. Each dataset is stored as file
 in `csv` directory.
 
-| Dataset | Train Samples | Test Samples | Dynamics | Sigma | L   |
-|---------|---------------|--------------|----------|-------|-----|
-| TOY     | 1000          | 1000         | None     | 0.05  | 1.0 |
-| STATIC  | 10 000        | 10 000       | None     | 0.1   | 1/4 |
+| Dataset | Train Samples | Test Samples | Dynamics  | Sigma | L   |
+|---------|---------------|--------------|-----------|-------|-----|
+| TOY     | 1000          | 1000         | None      | 0.05  | 1   |
+| STATIC  | 10 000        | 10 000       | None      | 0.1   | 1/4 |
+| DYNAMIC | 50 000        | 50 000       | Nonlinear | 0.05  | 1   |
 
 ### TOY
 
@@ -31,3 +32,10 @@ on range [-1, 1]. L is 1/4 for all Gaussian functions, so for its sum as well. N
 | C6 | 1.98  |
 | C7 | 0.31  |
 | C8 | -0.31 |
+
+### DYNAMIC
+
+This dataset represents low dimensional dynamic system, R^1 to R^1 with nonlinear dynamics. The function is defined as
+`x' = -k \sigma(x-1) u(t)`, where `sigma` is sigmoid function, `k` is constant equal to 0.9 and `u(t)` is input signal,
+which was generated as sine wave. The system was numerically integrated and is stored in CSV files with 3 columns:
+"t" for time, "u" for inputs and "y" for noised outputs.
