@@ -38,4 +38,5 @@ on range [-1, 1]. L is 1/4 for all Gaussian functions, so for its sum as well. N
 This dataset represents low dimensional dynamic system, R^1 to R^1 with nonlinear dynamics. The function is defined as
 `x' = -k \sigma(x-1) u(t)`, where `sigma` is sigmoid function, `k` is constant equal to 0.9 and `u(t)` is input signal,
 which was generated as sine wave. The system was numerically integrated and is stored in CSV files with 3 columns:
-"t" for time, "u" for inputs and "y" for noised outputs.
+"t" for time, "u" for inputs and "y" for noised outputs. Initial condition was 1, time is set to 100 000 samples from 0
+to 100 seconds and forcing was given as `sin(pi/5 t)`.
