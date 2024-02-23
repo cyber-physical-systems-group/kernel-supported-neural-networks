@@ -1,0 +1,5 @@
+name: DYNAMIC
+path: data/csv/dynamic.csv
+test_size: 50000
+input_columns: [u]
+output_columns: [y]

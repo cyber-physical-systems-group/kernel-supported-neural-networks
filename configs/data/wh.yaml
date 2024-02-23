@@ -1,0 +1,5 @@
+name: Wiener-Hammerstein
+path: data/wh.csv
+test_size: 88000
+input_columns: [u]
+output_columns: [y]

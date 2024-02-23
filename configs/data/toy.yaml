@@ -1,0 +1,5 @@
+name: TOY
+path: data/csv/toy.csv
+test_size: 1000
+input_columns: [x]
+output_columns: [y]
