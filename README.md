@@ -6,11 +6,18 @@ premises based on theoretical guarantees of train-supporting using kernel regres
 ## Dependencies
 
 We based our implementation on our core library, `pydentification`  (see: https://github.com/cyber-physical-systems-group/pydentification).
-Table below summarized relation of papers and results to the codebase and the library version.
+Most of the feature is implemented in [`v0.2.0-alpha`](https://github.com/cyber-physical-systems-group/pydentification/releases/tag/v0.2.0-alpha) 
+and the [`v0.3.0`](https://github.com/cyber-physical-systems-group/pydentification/releases/tag/v0.3.0) version contains
+the code for running the experiments (entrypoints etc.), experimentation code was implemented here and generalized and
+moved to main library.
 
-| Paper   | Link | Version                      |
-|---------|------|------------------------------|
-| Current | WIP  | [v0.1.0-alpha](v0.1.0-alpha) |
+## Source 
+
+Source code to run experiments in given in `src` package. It contains code specific for this research, but heavily
+relies on `pydentification` library. The code is organized in the following way:
+* `models` - definition of neural models and bounded trainer, with some manual toggles (CPU/GPU, etc.) 
+* `plots` - plotly utils for visualizing results for static and SISO dynamic systems
+* `shared` - code for preparing input using data-modules, reporting to W&B and saving models
 
 ## Datasets
 
@@ -38,6 +45,8 @@ This dataset represents high dimensional static system, R^8 to R^1. The function
 functions (not distribution, but explicit PDF) with different C (given in table below). The inputs are samples uniformly
 on range [-1, 1]. L is 1/4 for all Gaussian functions, so for its sum as well. Noise was added with sigma = 0.1.
 
+| C  | Value |
+|----|-------|
 | C1 | 1.42  |
 | C2 | -1.32 |
 | C3 | -1.65 |
