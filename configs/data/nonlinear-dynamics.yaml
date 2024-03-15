@@ -1,0 +1,5 @@
+name: NONLINEAR_DYNAMICS
+path: data/csv/nonlinear-dynamics.csv
+test_size: 50000
+input_columns: [u]
+output_columns: [y]
