@@ -1,7 +1,16 @@
 # Kernel-Supported Neural Networks
 
 Experiments and research related to kernel-supported neural networks, which are an attempt to high-probability accuracy
-premises based on theoretical guarantees of train-supporting using kernel regression (Nadaraya-Watson) estimators. 
+premises based on theoretical guarantees of train-supporting using kernel regression (Nadaraya-Watson) estimators.
+
+## Releases
+
+Following table summarizes all releases of the code, each corresponds to paper or pre-print version published using the
+method implemented and described in this repository.
+
+| Version    | Paper | Description                                               |
+|------------|-------|-----------------------------------------------------------|
+| v1.0-alpha | TBA   | Code used to run all experiments present in the pre-print |
 
 ## Dependencies
 
@@ -22,13 +31,15 @@ relies on `pydentification` library. The code is organized in the following way:
 ## Datasets
 
 This directory contains datasets used in the paper and presentations related to it. Each dataset is stored as file
-in `csv` directory.
+in `csv` directory. For Wiener-Hammerstein benchmark the values for `Sigma` and `L` are estimated, using smoothing
+and the characteristic of the nonlinear diode (only nonlinear element in the circuit).
 
-| Dataset | Train Samples | Test Samples | Dynamics  | Sigma | L   |
-|---------|---------------|--------------|-----------|-------|-----|
-| TOY     | 1000          | 1000         | None      | 0.05  | 1   |
-| STATIC  | 10 000        | 10 000       | None      | 0.1   | 1/4 |
-| DYNAMIC | 50 000        | 50 000       | Nonlinear | 0.05  | 1   |
+| Dataset            | Train Samples | Test Samples | Dynamics  | Sigma  | L   |
+|--------------------|---------------|--------------|-----------|--------|-----|
+| TOY                | 1000          | 1000         | None      | 0.05   | 1   |
+| STATIC             | 10 000        | 10 000       | None      | 0.1    | 1/4 |
+| DYNAMIC            | 50 000        | 50 000       | Nonlinear | 0.05   | 1   |
+| WIENER-HAMMERSTEIN | 100 000       | 88 000       | Nonlinear | <10e-3 | ~25 |
 
 ### TOY
 
@@ -68,3 +79,19 @@ to 100 seconds and forcing was given as `sin(pi/5 t)`.
 
 The Wiener-Hammerstein benchmark is a benchmark for nonlinear system identification. It is widely used in research
 related to nonlinear systems. Its description and data can be found [on this page](https://www.nonlinearbenchmark.org/benchmarks/wiener-hammerstein).
+
+## Results
+
+Results for out method on problems described above. $RMSE$ denotes root-mean-square error, $RRR$ denotes RMSE range
+ratio, which is the fraction of RMSE compared to the range of the target variable. For bounds of Wiener-Hammerstein
+benchmark, we did not optimize or search for best model, since both the dimensionality of the problem and its Lipschitz
+constant are too high, for our method to work.
+
+| Metric        | Sine Function | Sum of Gaussians | Nonlinear Dynamics | Wiener-Hammerstein |
+|---------------|---------------|------------------|--------------------|--------------------|
+| `RMSE_NET`    | 0.1037        | 0.0103           | 0.0502             | 0.0005             |
+| `RMSE_KRE`    | 0.1041        | 0.0143           | 0.0505             | 0.0835             |
+| `RMSE_BOUNDS` | 0.4207        | 0.2723           | 0.7054             | >1                 |
+| `RRR_NET`     | 5.86%         | 6.54%            | 3.64%              | 0.23%              |
+| `RRR_KRE`     | 5.89%         | 8.87%            | 3.67%              | 34.89%             |
+| `RRR_BOUND`   | 15.67%        | 163.99%          | 38.38%             | >500%              |
