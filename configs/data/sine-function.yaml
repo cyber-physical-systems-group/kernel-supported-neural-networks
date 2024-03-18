@@ -1,5 +1,5 @@
-name: TOY
-path: data/csv/toy.csv
+name: SINE_FUNCTION
+path: data/csv/sine-function.csv
 test_size: 1000
 input_columns: [x]
 output_columns: [y]
