@@ -72,7 +72,6 @@ def model_fn(
     # config is static config and parameters is changing config during sweep
     # for single run config is training config and parameters contains model settings
     network = network_fn(parameters)
-    # network = torch.load("models/trained-model-wh.pt")
 
     optimizer = torch.optim.Adam(network.parameters(), lr=1e-3)  # fixed initial LR
     lr_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=config["lr_patience"], verbose=True)
