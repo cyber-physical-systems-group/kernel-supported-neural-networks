@@ -2,3 +2,4 @@ numpy==1.25.1
 scikit-learn==1.3.0
 torch==2.1.0  # CPU only version
 lightning==2.1.0  # install after torch
+pynndescent==0.5.11
