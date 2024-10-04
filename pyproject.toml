@@ -1,13 +1,22 @@
+[project]
+name = "kernel-supported-neural-networks"
+version = "1.0.0"
+description = "Implementation for paper 'Kernel-Supported Neural Modeling of Nonlinear Systems'"
+license = {text = "MIT"}
+readme = {file = "README.md", content-type = "text/markdown"}
+authors = [
+    {name = "Krzysztof Zając", email = "krzysztof.zajac@pwr.edu.pl"}
+]
+
 [tool.black]
 line-length = 120
-target-version = ['py39', 'py310', 'py311']
+target-version = ['py311', 'py312']
 include = '\.pyi?$'
-
 
 [tool.isort]
 profile = 'black'
 line_length = 120
-py_version = 310
+py_version = 312
 
 [tool.mypy]
 exclude = [
