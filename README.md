@@ -8,9 +8,10 @@ premises based on theoretical guarantees of train-supporting using kernel regres
 Following table summarizes all releases of the code, each corresponds to paper or pre-print version published using the
 method implemented and described in this repository.
 
-| Version    | Paper | Description                                               |
-|------------|-------|-----------------------------------------------------------|
-| v1.0-alpha | TBA   | Code used to run all experiments present in the pre-print |
+| Version     | Paper | Description                                                       |
+|-------------|-------|-------------------------------------------------------------------|
+| v1.0-alpha  | TBA   | Code used to run all experiments present in the pre-print         |
+| v1.1-alpha  | TBA   | Same as `v1.0-alpha`, but with code transferred from main library |
 
 ## Dependencies
 
@@ -19,6 +20,9 @@ Most of the feature is implemented in [`v0.2.0-alpha`](https://github.com/cyber-
 and the [`v0.3.0`](https://github.com/cyber-physical-systems-group/pydentification/releases/tag/v0.3.0) version contains
 the code for running the experiments (entrypoints etc.), experimentation code was implemented here and generalized and
 moved to main library.
+
+*Note*: from [`v0.4.1`](TBA) implementation of nonparametric modules was moved here, to reduce the complexity of the
+main library and keep only shared components there. 
 
 ## Source 
 
