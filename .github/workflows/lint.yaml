@@ -11,14 +11,14 @@ jobs:
         with:
           options: "--check --verbose -l 120"
           jupyter: false
-          version: "23.7.0"
+          version: "24.8.0"
 
   flake8:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Install flake8
-        run: pip install flake8==6.0.0
+        run: pip install -r requirements-dev.txt
       - name: Run flake8
         uses: py-actions/flake8@v2
         with:
@@ -29,6 +29,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install isort
-        run: pip install isort==5.12.0
+        run: pip install -r requirements-dev.txt
       - name: Run isort
         run: isort . -l 120 --check
