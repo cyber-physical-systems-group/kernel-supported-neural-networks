@@ -3,7 +3,7 @@ import click
 from pydentification.experiment.entrypoints import run  # isort:skip
 from pydentification.experiment.entrypoints import sweep as sweep_entrypoint  # isort:skip
 
-import src as runtime  # alias entire module with required functions  # isort:skip
+import src.runner as runtime  # alias entire module with required functions  # isort:skip
 
 
 @click.command()
