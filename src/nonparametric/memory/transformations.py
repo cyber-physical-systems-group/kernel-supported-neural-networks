@@ -15,16 +15,13 @@ class MemoryTransformation(ABC):
     """
 
     @abstractmethod
-    def before_prepare(self, memory: Tensor) -> Tensor:
-        ...
+    def before_prepare(self, memory: Tensor) -> Tensor: ...
 
     @abstractmethod
-    def before_query(self, query: Tensor) -> Tensor:
-        ...
+    def before_query(self, query: Tensor) -> Tensor: ...
 
     @abstractmethod
-    def after_query(self, memory: Tensor) -> Tensor:
-        ...
+    def after_query(self, memory: Tensor) -> Tensor: ...
 
 
 class DecayTimeSeries(MemoryTransformation):

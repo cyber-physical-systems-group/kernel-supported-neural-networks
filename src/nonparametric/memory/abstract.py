@@ -16,8 +16,7 @@ class MemoryManager(ABC):
     prediction batch.
     """
 
-    def __init__(self, transform: MemoryTransformation | None = None):
-        ...
+    def __init__(self, transform: MemoryTransformation | None = None): ...
 
     @abstractmethod
     def prepare(self, memory: Tensor, targets: Tensor | tuple[Tensor, ...]):
