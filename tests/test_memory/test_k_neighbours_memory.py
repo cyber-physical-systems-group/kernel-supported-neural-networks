@@ -9,11 +9,11 @@ from src.nonparametric.memory.abstract import MemoryManager
 @pytest.mark.parametrize(
     "memory_manager",
     [
-        pytest.lazy_fixtures("nn_descent_memory_manager"),
-        pytest.lazy_fixtures("exact_memory_manager"),
-        pytest.lazy_fixtures("scikit_auto_memory_manager"),
-        pytest.lazy_fixtures("scikit_kd_tree_memory_manager"),
-        pytest.lazy_fixtures("scikit_ball_tree_memory_manager"),
+        lf("nn_descent_memory_manager"),
+        lf("exact_memory_manager"),
+        lf("scikit_auto_memory_manager"),
+        lf("scikit_kd_tree_memory_manager"),
+        lf("scikit_ball_tree_memory_manager"),
     ],
 )
 @pytest.mark.parametrize(
