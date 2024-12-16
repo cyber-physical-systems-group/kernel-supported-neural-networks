@@ -11,7 +11,7 @@ and the [`v0.3.0`](https://github.com/cyber-physical-systems-group/pydentificati
 the code for running the experiments (entrypoints etc.), experimentation code was implemented here and generalized and
 moved to main library.
 
-*Note*: from [`v0.4.1`](https://github.com/cyber-physical-systems-group/pydentification/releases/tag/v0.4.1) implementation of nonparametric modules was moved here, to reduce the complexity of the
+*Note*: from [`v0.4.2`](https://github.com/cyber-physical-systems-group/pydentification/releases/tag/v0.4.2) implementation of nonparametric modules was moved here, to reduce the complexity of the
 main library and keep only shared components there. 
 
 ## Releases
@@ -19,7 +19,7 @@ main library and keep only shared components there.
 | Version      | `pydentification` version | Description                                                                               |
 |--------------|---------------------------|-------------------------------------------------------------------------------------------|
 | `v1.0-alpha` | `v0.2.0-alpha`            | Pre-review code for the paper, with `nonparametric` models parts of the `pydentification` |
-| `v1.1-alpha` | `v0.4.1`                  | Pre-review code for the paper, with python 3.12 support and `nonparametric` models here   |
+| `v1.1-alpha` | `v0.4.2`                  | Pre-review code for the paper, with python 3.12 support and `nonparametric` models here   |
 
 ## Source 
 
