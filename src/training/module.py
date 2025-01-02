@@ -3,10 +3,6 @@ from warnings import warn
 
 import lightning.pytorch as pl
 import torch
-from pydentification.data.process import unbatch
-from pydentification.models.modules.activations import bounded_linear_unit
-from pydentification.models.modules.losses import BoundedMSELoss
-from pydentification.training.wrappers.inits import reset_parameters
 from torch import Tensor
 from torch.nn import Module
 from torch.utils.data import DataLoader
@@ -14,6 +10,17 @@ from torch.utils.data import DataLoader
 from src.nonparametric import functional as nonparametric_functional
 from src.nonparametric.estimators import noise_variance as noise_variance_estimator
 from src.nonparametric.kernels import KernelCallable
+from src.training.loss import BoundedMSELoss
+from src.training.utils import reset_parameters, unbatch
+
+
+def bounded_linear_unit(inputs: Tensor, lower: float | Tensor, upper: float | Tensor, inplace: bool = False) -> Tensor:
+    """
+    Bounded linear activation function. It means that the output is linear in range [lower, upper] and clamped
+    outside of it to the values of the bounds. Bounds can be scalar of tensor of the same shape as inputs.
+    """
+    out = inputs if inplace else None
+    return torch.clamp(inputs, min=lower, max=upper, out=out)
 
 
 class BoundedSimulationTrainingModule(pl.LightningModule):
