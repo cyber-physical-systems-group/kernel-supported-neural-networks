@@ -52,34 +52,34 @@ class BoundedSimulationTrainingModule(pl.LightningModule):
         lipschitz_constant: float,
         delta: float,
         noise_variance: float | Literal["estimate"] = "estimate",
-        k: int | None = None,
-        r: float | None = None,
-        p: int = 2,
+        k_neighbours: int | None = None,
+        radius: float | None = None,
+        power: int = 2,
         noise_var_kernel_size: int = 5,  # only used when noise_var is "estimate"
         bound_during_training: bool = False,
         bound_crossing_penalty: float = 0.0,
         max_reinit: int = 0,
         reinit_relative_tolerance: float = 0.0,
-        lr_scheduler: torch.optim.lr_scheduler.LRScheduler | None = None,
+        lr_scheduler: torch.optim.lr_scheduler.LRScheduler | None = None,  # type: ignore
         memory_device: Literal["cpu", "cuda"] = "cpu",
         predict_device: Literal["cpu", "cuda"] = "cpu",
     ):
         """
-        :param network: initialized neural network to be wrapped by HybridBoundedSimulationTrainingModule
+        :param network: initialized neural network to be wrapped by BoundedSimulationTrainingModule
         :param optimizer: initialized optimizer to be used for training
         :param memory_manager: memory manager class, which will be build in `adapt` and used to access training data
         :param bandwidth: bandwidth of the kernel of the kernel regression
-        :param kernel: kernel function used for kernel regression, see `pydentification.models.nonparametric.kernels`
+        :param kernel: kernel function used for kernel regression, see `nonparametric.kernels`
         :param lipschitz_constant: Lipschitz constant of the function to be estimated, needs to be known
         :param delta: confidence level, defaults to 0.1
         :param noise_variance: variance of the noise in the function to be estimated, defaults to "estimate"
-        :param k: number of nearest neighbors to use for kernel regression, either k or r needs to be defined
-        :param r: radius of the neighborhood to use for kernel regression, either k or r needs to be defined
-        :param p: exponent for point-wise distance, defaults to 2
+        :param k_neighbours: number of nearest neighbors to use for kernel regression, either k or r needs to be defined
+        :param radius: radius of the neighborhood to use for kernel regression, either k or r needs to be defined
+        :param power: exponent for point-wise distance, defaults to 2
         :param noise_var_kernel_size: kernel size for noise variance estimator, defaults to 5
         :param bound_during_training: flag to enable bounding during training, defaults to False
         :param bound_crossing_penalty: penalty factor for crossing bounds, see: BoundedMSELoss, defaults to 0.0
-        :param max_reinit: maximum number of reinitializations of the network before training, defaults to 0
+        :param max_reinit: maximum number of re-initializations of the network before training, defaults to 0
         :param reinit_relative_tolerance: relative tolerance for crossing bounds during reinit, defaults to 0.0
         :param lr_scheduler: initialized learning rate scheduler to be used for training, defaults to None
         :param memory_device: device to use for memory manager, defaults to "cpu"
@@ -103,17 +103,18 @@ class BoundedSimulationTrainingModule(pl.LightningModule):
         self.lipschitz_constant = lipschitz_constant
         self.delta = delta
         self.noise_variance = noise_variance
-        self.k = k
-        self.r = r
-        self.p = p
+        self.k_neighbours = k_neighbours
+        self.radius = radius
+        self.power = power
         self.noise_var_kernel_size = noise_var_kernel_size
 
         # dtype and device properties
         self.memory_device = memory_device
         self.predict_device = predict_device
         self.prepared: bool = False
+        self.noise_var_value: float | None = None
 
-        if not (k is None) ^ (r is None):
+        if not (k_neighbours is None) ^ (radius is None):
             raise ValueError("Exactly one of: k and r needs to be defined!")
 
     @classmethod
@@ -173,7 +174,10 @@ class BoundedSimulationTrainingModule(pl.LightningModule):
 
         if self.noise_variance == "estimate":  # estimate noise variance if its value is not given
             # only 1D signal is supported for noise variance estimation, so y is squeezed to (BATCH,)
-            self.noise_variance = noise_variance_estimator(y.squeeze(dim=-1), kernel_size=self.noise_var_kernel_size)
+            self.noise_var_value = noise_variance_estimator(y.squeeze(dim=-1), kernel_size=self.noise_var_kernel_size)
+        else:
+            # use given noise variance value
+            self.noise_var_value = self.noise_variance
 
         if self.memory_device == "cuda":
             # by default setup (which calls prepare) is running on CPU before tensors are moved to devices
@@ -213,16 +217,13 @@ class BoundedSimulationTrainingModule(pl.LightningModule):
                     self.network.apply(reset_parameters)
 
     @torch.no_grad()
-    def nonparametric_forward(self, x: Tensor) -> Tensor:
-        """
-        Part of forward function to predict value at given input points using kernel regression with fixed settings.
-        Shape interface is the same as for models used in `pydentification.models` package.
-        """
+    def nonparametric_forward(self, x: Tensor) -> tuple[Tensor, Tensor]:
+        """Part of forward function to predict value at given input points using kernel regression."""
         if x.size(1) == 1 and x.size(-1) != 1:
             x = x.permute(0, 2, 1)  # "swap" time and system dimension (from static MISO to dynamic SISO)
 
         x = x.squeeze(dim=-1)  # (BATCH, TIME_STEPS, SYSTEM_DIM) -> (BATCH, TIME_STEPS) for SISO systems
-        x_from_memory, y_from_memory, x = self.memory_manager.query(x, k=self.k, r=self.r)
+        x_from_memory, y_from_memory, x = self.memory_manager.query(x, k=self.k_neighbours, r=self.radius)
 
         predictions, kernels = nonparametric_functional.kernel_regression(
             memory=x_from_memory,
@@ -230,7 +231,7 @@ class BoundedSimulationTrainingModule(pl.LightningModule):
             inputs=x,
             kernel=self.kernel,
             bandwidth=self.bandwidth,
-            p=self.p,
+            p=self.power,
             return_kernel_density=True,  # always return kernel density for bounds, hybrid trainer requires it
         )
 
@@ -239,16 +240,16 @@ class BoundedSimulationTrainingModule(pl.LightningModule):
             bandwidth=self.bandwidth,
             delta=self.delta,
             lipschitz_constant=self.lipschitz_constant,
-            noise_variance=self.noise_variance,
+            noise_variance=self.noise_var_value,
             dim=1,  # always 1 for SISO dynamical systems
         )
 
         # run bounds extrapolation to ensure that bounds are always positive
         # bounds are diverging linearly with lipschitz constant from known points
-        bounds = nonparametric_functional.extrapolate_bounds(x, bounds, self.lipschitz_constant, p=self.p)
+        bounds = nonparametric_functional.extrapolate_bounds(x, bounds, self.lipschitz_constant, p=self.power)
         return predictions, bounds
 
-    def forward(self, x: Tensor, return_nonparametric: bool = False) -> Tensor:
+    def forward(self, x: Tensor, return_nonparametric: bool = False) -> tuple[Tensor, ...]:
         nonparametric_predictions, bounds = self.nonparametric_forward(x)
         # bounds are returned as distance from nonparametric predictions
         upper_bound = nonparametric_predictions + bounds
@@ -293,7 +294,7 @@ class BoundedSimulationTrainingModule(pl.LightningModule):
         return {key: value for key, value in config.items() if value is not None}  # remove None values
 
     @torch.no_grad()
-    def predict_step(self, batch: tuple[Tensor, Tensor], batch_idx: int, dataloader_idx: int = 0) -> dict[str, Tensor]:
+    def predict_step(self, batch: tuple[Tensor, ...], batch_idx: int, dataloader_idx: int = 0) -> dict[str, Tensor]:
         """
         Returns network and nonparametric estimator predictions and bounds for given batch.
         Outputs are returned as dictionary, so that they can be easily logged to W&B.

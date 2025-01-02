@@ -16,7 +16,7 @@ def box_kernel(x: Tensor, width: float, offset: float) -> Tensor:
     :param width: bandwidth of the kernel
     :param offset: center of the kernel, offset from 0
     """
-    return (torch.abs(x - offset) <= width).to(x.dtype)
+    return (torch.abs(x - offset) <= width).to(x.dtype)  # type: ignore
 
 
 @torch.no_grad()
@@ -44,7 +44,8 @@ def epanechnikov_kernel(x: Tensor, width: float, offset: float) -> Tensor:
     """
     x = x / width
     x = x - offset
-    return 0.75 * (1 - x**2) * (torch.abs(x) <= 1).to(x.dtype)
+    kernel = 0.75 * (1 - x**2) * (torch.abs(x) <= 1)
+    return kernel.to(x.dtype)
 
 
 @torch.no_grad()
@@ -58,7 +59,8 @@ def triangular_kernel(x: Tensor, width: float, offset: float) -> Tensor:
     """
     x = x / width
     x = x - offset
-    return (1 - torch.abs(x)) * (torch.abs(x) <= 1).to(x.dtype)
+    kernel = (1 - torch.abs(x)) * (torch.abs(x) <= 1)
+    return kernel.to(x.dtype)
 
 
 @torch.no_grad()
@@ -72,7 +74,8 @@ def quartic_kernel(x: Tensor, width: float, offset: float) -> Tensor:
     """
     x = x / width
     x = x - offset
-    return (15 / 16 * (1 - x**2) ** 2) * (torch.abs(x) <= 1).to(x.dtype)
+    kernel = (15 / 16 * (1 - x**2) ** 2) * (torch.abs(x) <= 1)
+    return kernel.to(x.dtype)
 
 
 @torch.no_grad()
@@ -86,7 +89,8 @@ def triweight_kernel(x: Tensor, width: float, offset: float) -> Tensor:
     """
     x = x / width
     x = x - offset
-    return 35 / 32 * (1 - (x**2) ** 3) * (torch.abs(x) <= 1).to(x.dtype)
+    kernel = 35 / 32 * (1 - (x**2) ** 3) * (torch.abs(x) <= 1)
+    return kernel.to(x.dtype)
 
 
 @torch.no_grad()
@@ -100,7 +104,8 @@ def tricube_kernel(x: Tensor, width: float, offset: float) -> Tensor:
     """
     x = x / width
     x = x - offset
-    return 70 / 81 * (1 - torch.abs(x) ** 3) ** 3 * (torch.abs(x) <= 1).to(x.dtype)
+    kernel = 70 / 81 * (1 - torch.abs(x) ** 3) ** 3 * (torch.abs(x) <= 1)
+    return kernel.to(x.dtype)
 
 
 @torch.no_grad()
@@ -114,7 +119,8 @@ def cosine_kernel(x: Tensor, width: float, offset: float) -> Tensor:
     """
     x = x / width
     x = x - offset
-    return math.pi / 4 * torch.cos(x * math.pi / 2) * (torch.abs(x) <= 1).to(x.dtype)
+    kernel = math.pi / 4 * torch.cos(x * math.pi / 2) * (torch.abs(x) <= 1)
+    return kernel.to(x.dtype)
 
 
 @torch.no_grad()
@@ -128,7 +134,7 @@ def logistic_kernel(x: Tensor, width: float, offset: float) -> Tensor:
     """
     x = x / width
     x = x - offset
-    return 1 / (torch.exp(x) + 2 + torch.exp(-x))
+    return 1 / (torch.exp(x) + 2 + torch.exp(-1 * x))
 
 
 @torch.no_grad()
@@ -142,7 +148,7 @@ def sigmoid_kernel(x: Tensor, width: float, offset: float) -> Tensor:
     """
     x = x / width
     x = x - offset
-    return 2 / math.pi / (torch.exp(x) + torch.exp(-x))
+    return 2 / math.pi / (torch.exp(x) + torch.exp(-1 * x))
 
 
 COMPACT_CARRIER_KERNELS = (
