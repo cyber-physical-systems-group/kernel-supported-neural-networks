@@ -19,7 +19,7 @@ main library and keep only shared components there.
 | Version                 | `pydentification` version | Description                                                                                     |
 |-------------------------|---------------------------|-------------------------------------------------------------------------------------------------|
 | `v1.0-alpha`            | `v0.2.0-alpha`            | Pre-review code for the paper, with `nonparametric` models parts of the `pydentification`       |
-| `v1.1-alpha`            | `v0.4.2`                  | Pre-review code for the paper, with python 3.12 support and `nonparametric` models here         |
+| `v1.1-alpha`            | `v0.5.0`                  | Pre-review code for the paper, with python 3.12 support and `nonparametric` models here         |
 | `v1.1-alpha-standalone` | NA                        | Stand-alone version, which can be run without `pydentification`, otherwise same as `v1.1-alpha` | 
 
 ## Source 
