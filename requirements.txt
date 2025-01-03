@@ -4,4 +4,4 @@ torch==2.4.0  # CPU only version
 lightning==2.4.0  # install after torch
 pynndescent==0.5.11
 
-git+https://github.com/cyber-physical-systems-group/pydentification.git@v0.4.2  # our main library
+git+https://github.com/cyber-physical-systems-group/pydentification.git@v0.5.0  # our main library
