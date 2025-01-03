@@ -14,8 +14,8 @@ and does not hold state. To use the function run following code:
 ```python
 import torch
 
-from pydentification.models.nonparametric.functional import kernel_regression
-from pydentification.models.nonparametric.kernels import box_kernel
+from src.nonparametric.functional import kernel_regression
+from src.nonparametric.kernels import box_kernel
 
 
 x = torch.rand(100, 2)
@@ -38,8 +38,8 @@ To use the function run following code:
 ```python
 import torch
 
-from pydentification.models.nonparametric.functional import kernel_regression, kernel_regression_bounds
-from pydentification.models.nonparametric.kernels import box_kernel
+from src.nonparametric.nonparametric.functional import kernel_regression, kernel_regression_bounds
+from src.nonparametric.kernels import box_kernel
 
 
 x = torch.rand(100, 2)
