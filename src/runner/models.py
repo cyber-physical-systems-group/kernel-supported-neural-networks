@@ -5,8 +5,8 @@ import torch
 import wandb
 
 from pydentification.models.modules.feedforward import TimeSeriesLinear  # isort:skip
-from pydentification.models.nonparametric import kernels, memory  # isort:skip
-from pydentification.training.bounded.module import BoundedSimulationTrainingModule  # isort:skip
+from src.nonparametric import kernels, memory  # isort:skip
+from src.training.module import BoundedSimulationTrainingModule  # isort:skip
 
 # activation and kernel mappings are needed to access functional implementations using config
 KERNELS = {  # only compact carrier kernels
@@ -97,8 +97,8 @@ def model_fn(
         lipschitz_constant=parameters["lipschitz_constant"],
         delta=parameters["delta"],
         noise_variance=parameters["noise_variance"],
-        k=parameters["k"],
-        p=2,
+        k_neighbours=parameters["k"],
+        power=2,
         # toggle devices manually depending on the available hardware
         memory_device="cpu",  # default is CPU
         predict_device="cpu",

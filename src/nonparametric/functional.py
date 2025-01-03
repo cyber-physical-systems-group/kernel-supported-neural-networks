@@ -28,7 +28,7 @@ def kernel_regression(
     bandwidth: float,
     p: int = 2,
     return_kernel_density: bool = False,
-) -> Tensor:
+) -> Tensor | tuple[Tensor, Tensor]:
     """
     Functional implementation of kernel regression, which computes the weighted average of the memory (training data)
     using kernel function given as callable.

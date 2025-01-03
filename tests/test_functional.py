@@ -162,5 +162,5 @@ def test_kernel_regression_bounds(inputs: Tensor, memory: Tensor, targets: Tenso
         ),
     ),
 )
-def test_extrapolate_bounds(inputs: Tensor, bounds: Tensor, lc: float, expected: Tensor) -> Tensor:
+def test_extrapolate_bounds(inputs: Tensor, bounds: Tensor, lc: float, expected: Tensor):
     assert torch.allclose(extrapolate_bounds(inputs, bounds, lc, p=2), expected)

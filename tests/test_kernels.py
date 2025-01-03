@@ -4,6 +4,27 @@ import torch
 from src.nonparametric import kernels
 
 
+@pytest.mark.parametrize(
+    "kernel",
+    [
+        kernels.box_kernel,
+        kernels.gaussian_kernel,
+        kernels.epanechnikov_kernel,
+        kernels.triangular_kernel,
+        kernels.quartic_kernel,
+        kernels.triweight_kernel,
+        kernels.tricube_kernel,
+        kernels.cosine_kernel,
+        kernels.logistic_kernel,
+        kernels.sigmoid_kernel,
+    ],
+)
+def test_kernels(kernel: kernels.KernelCallable):
+    """Smoke test for all kernels, just check if they run correctly"""
+    x = torch.linspace(-2, 2, 100)
+    kernel(x, width=1, offset=0)
+
+
 @pytest.mark.parametrize("kernel", kernels.COMPACT_CARRIER_KERNELS)
 def test_compact_carrier_kernels(kernel: callable):
     """
