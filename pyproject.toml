@@ -1,6 +1,6 @@
 [project]
 name = "kernel-supported-neural-networks"
-version = "1.0.0"
+version = "v1.1-alpha"
 description = "Implementation for paper 'Kernel-Supported Neural Modeling of Nonlinear Systems'"
 license = {text = "MIT"}
 readme = {file = "README.md", content-type = "text/markdown"}
