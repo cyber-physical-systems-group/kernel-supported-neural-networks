@@ -7,19 +7,20 @@ premises based on theoretical guarantees of train-supporting using kernel regres
 
 We based our implementation on our core library, `pydentification`  (see: https://github.com/cyber-physical-systems-group/pydentification).
 Most of the feature is implemented in [`v0.2.0-alpha`](https://github.com/cyber-physical-systems-group/pydentification/releases/tag/v0.2.0-alpha) 
-and the [`v0.3.0`](https://github.com/cyber-physical-systems-group/pydentification/releases/tag/v0.3.0) version contains
+and the [`v0.3.0-alpha`](https://github.com/cyber-physical-systems-group/pydentification/releases/tag/v0.3.0-alpha) version contains
 the code for running the experiments (entrypoints etc.), experimentation code was implemented here and generalized and
 moved to main library.
 
-*Note*: from [`v0.4.2`](https://github.com/cyber-physical-systems-group/pydentification/releases/tag/v0.4.2) implementation of nonparametric modules was moved here, to reduce the complexity of the
+*Note*: from [`v0.5.0`](https://github.com/cyber-physical-systems-group/pydentification/releases/tag/v0.5.0) implementation of nonparametric modules was moved here, to reduce the complexity of the
 main library and keep only shared components there. 
 
 ## Releases
 
-| Version      | `pydentification` version | Description                                                                               |
-|--------------|---------------------------|-------------------------------------------------------------------------------------------|
-| `v1.0-alpha` | `v0.2.0-alpha`            | Pre-review code for the paper, with `nonparametric` models parts of the `pydentification` |
-| `v1.1-alpha` | `v0.4.2`                  | Pre-review code for the paper, with python 3.12 support and `nonparametric` models here   |
+| Version                 | `pydentification` version | Description                                                                                     |
+|-------------------------|---------------------------|-------------------------------------------------------------------------------------------------|
+| `v1.0-alpha`            | `v0.2.0-alpha`            | Pre-review code for the paper, with `nonparametric` models parts of the `pydentification`       |
+| `v1.1-alpha`            | `v0.4.2`                  | Pre-review code for the paper, with python 3.12 support and `nonparametric` models here         |
+| `v1.1-alpha-standalone` | NA                        | Stand-alone version, which can be run without `pydentification`, otherwise same as `v1.1-alpha` | 
 
 ## Source 
 
@@ -28,6 +29,12 @@ relies on `pydentification` library. The code is organized in the following way:
 * `models` - definition of neural models and bounded trainer, with some manual toggles (CPU/GPU, etc.) 
 * `plots` - plotly utils for visualizing results for static and SISO dynamic systems
 * `shared` - code for preparing input using data-modules, reporting to W&B and saving models
+
+## Model Parameters
+
+Models are added as assets to each release. Download them and put then into `models` directory. For `v1.0-alpha` entire
+torch models are added, but for `v1.1-alpha` only the weights are added, since the model is defined in the code. The
+same models can be used for `v1.1-alpha-standalone` release.
 
 ## Datasets
 

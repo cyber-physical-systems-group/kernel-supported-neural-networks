@@ -1,7 +1,7 @@
 # Kernel Regression
 
 Kernel regression is a non-parametric model, which can be used to estimate static-nonlinear functions and SISO dynamical
-system with finite memory, by converting inputs using delay-line. This implementation is using only PyTorch and it can
+system with finite memory, by converting inputs using delay-line. This implementation is using only PyTorch, and it can
 handle large dataset sizes with high dimensions by using `MemoryManagers`.
 
 # Functional
@@ -87,22 +87,24 @@ be very memory and time-consuming, especially for large datasets.
 Memory managers use ANN algorithms (Approximate Nearest Neighbors) to query the known dataset (called memory) for pairs
 of inputs and corresponding outputs, which are closest to points, in which function is to be estimated in the input 
 space. This allows to reduce the number of computations and memory usage, while still providing good estimation quality,
-since when `k` or `r` are set correctly, points not returned in memory, would be further away then `bandwidth`, hence
-do not contribute to the estimation.
+since when `k_neighbours` or `radius` are set correctly, points not returned in memory, would be further away then
+`bandwidth`, hence do not contribute to the estimation.
 
 *Note*: Kernel regression bounds can still be used with memory managers. They are computed point-wise and depend on the
 kernel density, which is still computed. When memory manager returns all points, which are closer than bandwidth for
 each query, the bounds will be exactly the same as when using the full memory, in case some points are missed, due to
-heuristic nature of ANN or setting too low `k` or `r`, the bounds will be wider then with full memory.
+heuristic nature of ANN or setting too low `k_neighbours` or `radius`, the bounds will be wider then with full memory.
 
 To use the memory manager with kernel regression, run following code:
 
 ```python
+from itertools import batched
+
 import torch
 
-from pydentification.models.nonparametric.functional import kernel_regression
-from pydentification.models.nonparametric.kernels import box_kernel
-from pydentification.models.nonparametric.memory import NNDescentMemoryManager
+from src.nonparametric.functional import kernel_regression
+from src.nonparametric.kernels import box_kernel
+from src.nonparametric.memory import NNDescentMemoryManager
 
 
 x = torch.rand(10_000, 100)  # very large dataset with high dimension
@@ -115,7 +117,7 @@ delta = 0.1  # Probability of the true function being in bounds
 
 memory_manager = NNDescentMemoryManager(memory=x, targets=y)  # k is the number of neighbors to return
 
-for batch in batched(test_x, batch_size=100):  # assume batched exists
+for batch in batched(test_x, batch_size=100):
     memory, targets = memory_manager.query_nearest(batch, k=10)
     y_hat = kernel_regression(memory=memory, targets=targets, points=batch, kernel=box_kernel, bandwidth=0.1)
 ```
@@ -128,7 +130,11 @@ Currently implemented memory managers:
 
 *Note*: We use `pip` to install dependencies and FAISS currently only supports `conda` installation, so it is not
 included in automatic installing and by-extension testing. To use it, it is recommended to install manually from source,
-using release newer than 1.7.4 (as we use python 3.10 in this project). For more information see: https://github.com/facebookresearch/faiss/wiki/Installing-Faiss.
+using release newer than 1.7.4 (tested on python 3.10). FAISS is not used for any examples, as it does not yield better
+results, but can significantly improve performance for really large datasets. We provided the implementation, as we used
+it to experiment, but no results reported in the paper are using the FAISS memory manager.
+
+For more information see: https://github.com/facebookresearch/faiss/wiki/Installing-Faiss.
 
 # References
 
