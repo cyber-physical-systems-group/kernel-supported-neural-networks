@@ -12,15 +12,10 @@ known dataset (explanatory data), which can lead to extreme memory consumption a
 issue, we use approximated nearest neighbours algorithm to select memory dynamically from entire known data. Bounds are
 computed using those fetched points only, so the nearest neighbour algorithm does not affect the certainty.
 
-## Dependencies
-
-The implementation of hybrid training is based on `pydentification` packages in models, namely: `nonparametric`,
-`modules.activations` and `modules.losses`. 
-
 ## Algorithm
 
 The goal of bounded training is using kernel regression with bounds [1] to transfer them to neural network. This is done
-using bounded activation, which is defined in `pydentification.modules.activations`. The activation is used in such a 
+using bounded activation, which is defined in `src.training.module`. The activation is used in such a 
 way, that network predictions will never go outside of those bounds. The details of the algorithm are described in our 
 paper [2].
 
@@ -72,7 +67,7 @@ model = BoundedSimulationTrainingModule(
 )
 
 trainer = pl.Trainer(max_epochs=10)
-trainer.fit(model, datamodule=dm)  # assume datamodule exists and it is pydentification.datamodules.SimulationDataModule
+trainer.fit(model, datamodule=dm)  # assume datamodule exists
 ```
 
 It is possible to use GPU or other accelerators with `BoundedSimulationTrainingModule`, while keeping the memory on 
@@ -104,7 +99,7 @@ model = BoundedSimulationTrainingModule(
 )
 
 trainer = pl.Trainer(max_epochs=10, accelerator="gpu", gpus=1)
-trainer.fit(model, datamodule=dm)  # assume datamodule exists and it is pydentification.datamodules.SimulationDataModule
+trainer.fit(model, datamodule=dm)  # assume datamodule exists
 ```
 
 ### Implementation Details
@@ -148,9 +143,9 @@ There are 20 candidate implementations:
      * (complex64, complex64) -> complex64
      * (complex128, complex128) -> complex128
 
-During: typing of intrinsic-call at /mnt/c/Users/kzaja/Documents/Research/Github/pydentification/venv/lib/python3.10/site-packages/pynndescent/pynndescent_.py (1281)
+During: typing of intrinsic-call at /path/to/python/pynndescent/pynndescent_.py (1281)
 
-File "venv/lib/python3.10/site-packages/pynndescent/pynndescent_.py", line 1281:
+File "/path/to/python/pynndescent/pynndescent_.py", line 1281:
         def search_closure(query_points, k, epsilon, visited, rng_state):
             <source elided>
             result = make_heap(query_points.shape[0], k)
@@ -163,8 +158,3 @@ File "venv/lib/python3.10/site-packages/pynndescent/pynndescent_.py", line 1281:
 Paweł Wachel and Krzysztof Kowalczyk and Cristian R. Rojas (2023)
 *Decentralized diffusion-based learning under non-parametric limited prior knowledge*
 https://arxiv.org/abs/2305.03295
-
-<a id="2">[2]</a> 
-Krzysztof Zając and Krzysztof Kowalczyk and Paweł Wachel (2024)
-*Kernel-Supported Neural Modeling of Nonlinear Systems*
-TBA
