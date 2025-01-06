@@ -4,9 +4,9 @@ import lightning.pytorch as pl
 import torch
 import wandb
 
-from pydentification.models.modules.feedforward import TimeSeriesLinear  # isort:skip
-from src.nonparametric import kernels, memory  # isort:skip
-from src.training.module import BoundedSimulationTrainingModule  # isort:skip
+from src.nonparametric import kernels, memory
+from src.training.module import BoundedSimulationTrainingModule
+from src.training.network import TimeSeriesLinear
 
 # activation and kernel mappings are needed to access functional implementations using config
 KERNELS = {  # only compact carrier kernels

@@ -1,7 +1,7 @@
 # typing is ignored due to using dynamic casting between torch, numpy and pandas, which is not properly handled by mypy
 # type: ignore
 from pathlib import Path
-from typing import Iterable, Sequence, Literal
+from typing import Iterable, Literal, Sequence, Union
 
 import lightning.pytorch as pl
 import numpy as np

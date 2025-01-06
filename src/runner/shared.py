@@ -7,9 +7,9 @@ import torch
 import wandb
 from numpy.typing import NDArray
 
-from pydentification.data.datamodules.simulation import SimulationDataModule  # isort:skip
-from pydentification.experiment.reporters import report_metrics, report_trainable_parameters  # isort:skip
-from pydentification.metrics import regression_metrics  # isort:skip
+from src.training.datamodule import SimulationDataModule  # isort:skip
+from src.runner.reporters import report_metrics, report_trainable_parameters  # isort:skip
+from src.metrics import regression_metrics  # isort:skip
 
 from .plots import report_dynamic_prediction_plot, report_static_prediction_plot  # isort:skip  # noqa: F401
 
